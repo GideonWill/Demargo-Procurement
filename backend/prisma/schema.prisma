@@ -1,0 +1,192 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  STORE_MANAGER
+  FINANCE_OFFICER
+  MANAGEMENT_VIEWER
+}
+
+enum POStatus {
+  PENDING
+  APPROVED
+  RECEIVED
+  PAID
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIALLY_PAID
+  PAID
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CHECK
+  MOBILE_MONEY
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         Role          @default(STORE_MANAGER)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  auditLogs    AuditLog[]
+  movements    StockMovement[]
+}
+
+model Supplier {
+  id             String          @id @default(uuid())
+  name           String
+  companyName    String
+  phone          String
+  email          String          @unique
+  address        String
+  products       Product[]
+  purchaseOrders PurchaseOrder[]
+  payments       Payment[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique // Curtain Materials, Curtain Accessories, Blinds, Automation
+  description String?
+  products    Product[]
+}
+
+model Product {
+  id               String            @id @default(uuid())
+  name             String
+  code             String?           // Fabric / Item Code
+  description      String?
+  subCategory      String?           // e.g., "100% Blackout Fabric", "Tracks", "Zebra Blinds"
+  measurementUnit  String            // e.g., "yards", "pieces", "meters"
+  quantityAvailable Float            @default(0.0)
+  minStockLevel    Float             @default(0.0)
+  purchasePrice    Float
+  sellingPrice     Float
+  categoryId       String
+  category         Category          @relation(fields: [categoryId], references: [id])
+  supplierId       String
+  supplier         Supplier          @relation(fields: [supplierId], references: [id])
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  stockMovements   StockMovement[]
+  poItems          PurchaseOrderItem[]
+  projectMaterials ProjectMaterial[]
+}
+
+model StockMovement {
+  id               String   @id @default(uuid())
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id])
+  previousQuantity Float
+  change           Float    // Positive for additions, negative for allocations/removals
+  newQuantity      Float
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  reason           String   // e.g., "Purchased", "Allocated for Villagio Apartment", "Manual Correction"
+  date             DateTime @default(now())
+}
+
+model PurchaseOrder {
+  id             String              @id @default(uuid())
+  poNumber       String              @unique // PO-XXXXXX
+  supplierId     String
+  supplier       Supplier            @relation(fields: [supplierId], references: [id])
+  date           DateTime            @default(now())
+  status         POStatus            @default(PENDING)
+  totalCost      Float               @default(0.0)
+  items          PurchaseOrderItem[]
+  payments       Payment[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  quantity        Float
+  unitCost        Float
+  totalCost       Float
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  invoiceNumber   String        @unique // INV-XXXXXX
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  supplierId      String
+  supplier        Supplier      @relation(fields: [supplierId], references: [id])
+  amountPaid      Float
+  paymentMethod   PaymentMethod
+  paymentDate     DateTime      @default(now())
+  status          PaymentStatus @default(PENDING)
+  notes           String?
+  createdAt       DateTime      @default(now())
+}
+
+model Project {
+  id               String            @id @default(uuid())
+  clientName       String
+  location         String
+  projectType      String            // Residential, Office, Hotel, etc.
+  startDate        DateTime
+  status           ProjectStatus     @default(PLANNING)
+  materials        ProjectMaterial[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model ProjectMaterial {
+  id         String   @id @default(uuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  qtyReserved Float
+  isConsumed Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  message   String
+  type      String   // "LOW_STOCK" | "OUT_OF_STOCK" | "PAYMENT_OVERDUE" | "SYSTEM"
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String   // e.g., "Updated Blackout Fabric quantity"
+  details   String   // JSON string of differences: {"previous": 500, "new": 350}
+  createdAt DateTime @default(now())
+}
