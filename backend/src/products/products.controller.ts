@@ -233,6 +233,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
       subCategory,
       quantityAvailable,
       minStockLevel,
+      reason,
     } = req.body;
 
     const existingProduct = await prisma.product.findUnique({ where: { id } });
@@ -278,7 +279,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
         change,
         newQty,
         userId,
-        change > 0 ? 'Manual inventory addition' : 'Manual inventory reduction'
+        reason || (change > 0 ? 'Manual inventory addition' : 'Manual inventory reduction')
       );
 
       // Trigger low-stock alerts
