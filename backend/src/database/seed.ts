@@ -40,25 +40,23 @@ async function main() {
 
   // 2. Seed Default Admin
   const adminEmail = 'admin@demargo.com';
-  const existingAdmin = await prisma.user.findUnique({
-    where: { email: adminEmail },
-  });
+  const adminPassword = process.env.ADMIN_PASSWORD || 'DemargoProcure#2026!';
+  const passwordHash = await bcrypt.hash(adminPassword, 10);
 
-  if (!existingAdmin) {
-    const passwordHash = await bcrypt.hash('admin123', 10);
-    await prisma.user.create({
-      data: {
-        email: adminEmail,
-        passwordHash,
-        name: 'Demargo Administrator',
-        role: Role.ADMIN,
-        isActive: true,
-      },
-    });
-    console.log(`Seeding: Default Admin created (email: ${adminEmail}, password: admin123).`);
-  } else {
-    console.log('Seeding: Default Admin user already exists.');
-  }
+  await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {
+      passwordHash, // This will update the password of the existing admin when run
+    },
+    create: {
+      email: adminEmail,
+      passwordHash,
+      name: 'Demargo Administrator',
+      role: Role.ADMIN,
+      isActive: true,
+    },
+  });
+  console.log(`Seeding: Admin account verified and updated (email: ${adminEmail}).`);
 
   console.log('Database seeding complete.');
 }

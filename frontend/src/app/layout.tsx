@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Demargo ERP - Inventory & Procurement System",
+  title: "Demargo - Procurement Management System",
   description: "Enterprise Resource Planning system for Demargo Interior Contractors managing curtain materials, blinds, suppliers, projects, and payments.",
 };
 

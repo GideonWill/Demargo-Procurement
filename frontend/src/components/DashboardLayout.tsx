@@ -23,7 +23,7 @@ import {
   CheckIcon
 } from '@heroicons/react/24/outline';
 
-const API_SOCKET_URL = 'http://localhost:5000';
+const API_SOCKET_URL = process.env.NEXT_PUBLIC_API_SOCKET_URL || 'http://localhost:5000';
 
 interface Notification {
   id: string;

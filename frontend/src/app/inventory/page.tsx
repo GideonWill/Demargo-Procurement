@@ -110,10 +110,15 @@ export default function InventoryPage() {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
   });
+
+  // Watch category selection to conditionally render Fabric Code input
+  const watchedCategoryId = watch('categoryId');
+  const isCurtainMaterialSelected = categories.find(c => c.id === watchedCategoryId)?.name === 'Curtain Materials';
 
   const {
     register: registerAdjust,
@@ -166,7 +171,7 @@ export default function InventoryPage() {
   const onSubmit = (values: ProductFormValues) => {
     const payload = {
       ...values,
-      code: values.code || null,
+      code: isCurtainMaterialSelected ? (values.code || null) : null,
       purchasePrice: parseFloat(values.purchasePrice),
       sellingPrice: values.sellingPrice ? parseFloat(values.sellingPrice) : 0,
       quantityAvailable: values.quantityAvailable ? parseFloat(values.quantityAvailable) : 0,
@@ -460,10 +465,10 @@ export default function InventoryPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[500px] overflow-y-auto">
+              <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
                 {/* Product Name & Code */}
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="col-span-2">
+                  <div className={isCurtainMaterialSelected ? "col-span-2" : "col-span-3"}>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Product Name</label>
                     <input
                       type="text"
@@ -473,15 +478,17 @@ export default function InventoryPage() {
                     />
                     {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Fabric Code</label>
-                    <input
-                      type="text"
-                      {...register('code')}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      placeholder="e.g. FB-101"
-                    />
-                  </div>
+                  {isCurtainMaterialSelected && (
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Fabric Code</label>
+                      <input
+                        type="text"
+                        {...register('code')}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="e.g. FB-101"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

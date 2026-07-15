@@ -223,7 +223,7 @@ export default function ReportsPage() {
         {/* PRINT ONLY BRAND HEADER */}
         <div className="hidden print:flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-4">
           <div>
-            <span className="text-orange-500 font-extrabold text-2xl tracking-wider">DEMARGO ERP</span>
+            <span className="text-orange-500 font-extrabold text-2xl tracking-wider">DEMARGO PROCUREMENT</span>
             <p className="text-xs text-slate-500 font-semibold mt-1">Interior Design Contractors - Accounting Ledger</p>
           </div>
           <div className="text-right text-xs text-slate-400">
