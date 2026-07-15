@@ -30,8 +30,8 @@ const productSchema = zod.object({
   measurementUnit: zod.string().min(1, 'Unit of measurement is required (e.g. yards, pieces)'),
   subCategory: zod.string().optional(),
   description: zod.string().optional(),
-  quantityAvailable: zod.string().refine(val => !isNaN(parseFloat(val)), 'Must be a valid number').optional(),
-  minStockLevel: zod.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, 'Must be a non-negative number').optional(),
+  quantityAvailable: zod.string().optional().refine(val => !val || !isNaN(parseFloat(val)), 'Must be a valid number'),
+  minStockLevel: zod.string().optional().refine(val => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), 'Must be a non-negative number'),
 });
 
 type ProductFormValues = zod.infer<typeof productSchema>;
