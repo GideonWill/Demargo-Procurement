@@ -87,6 +87,8 @@ export default function InventoryPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [adjustModalOpen, setAdjustModalOpen] = useState(false);
   const [isInternal, setIsInternal] = useState(false);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyProductId, setHistoryProductId] = useState<string | null>(null);
 
   // Queries
   const { data: products = [], isLoading: productsLoading, refetch: refetchProducts } = useQuery<Product[]>({
@@ -102,6 +104,12 @@ export default function InventoryPage() {
   const { data: suppliers = [] } = useQuery<Supplier[]>({
     queryKey: ['suppliers'],
     queryFn: () => ApiClient.get('/suppliers'),
+  });
+
+  const { data: historyProduct, isLoading: historyLoading } = useQuery<any>({
+    queryKey: ['product-history', historyProductId],
+    queryFn: () => ApiClient.get(`/products/${historyProductId}`),
+    enabled: !!historyProductId,
   });
 
   // Forms setup
@@ -138,6 +146,9 @@ export default function InventoryPage() {
       setProductModalOpen(false);
       reset();
     },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to create product');
+    }
   });
 
   const updateMutation = useMutation({
@@ -148,6 +159,9 @@ export default function InventoryPage() {
       setSelectedProduct(null);
       reset();
     },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to update product');
+    }
   });
 
   const deleteMutation = useMutation({
@@ -344,7 +358,16 @@ export default function InventoryPage() {
                                   {p.code}
                                 </span>
                               )}
-                              <span>{p.name}</span>
+                              <button
+                                onClick={() => {
+                                  setHistoryProductId(p.id);
+                                  setHistoryModalOpen(true);
+                                }}
+                                className="text-left font-bold text-slate-800 hover:text-orange-600 hover:underline focus:outline-none transition-colors"
+                                title="Click to view stock movements history"
+                              >
+                                {p.name}
+                              </button>
                             </span>
                             <span className="text-xs text-slate-400 truncate max-w-xs">{p.description || '-'}</span>
                           </div>
@@ -680,6 +703,20 @@ export default function InventoryPage() {
                   />
                 </div>
 
+                {/* Validation Error Summary */}
+                {Object.keys(errors).length > 0 && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 p-3.5 rounded-xl text-xs font-semibold space-y-1">
+                    <p className="font-bold flex items-center">
+                      ⚠️ Please check the following required fields:
+                    </p>
+                    <ul className="list-disc pl-4 space-y-0.5">
+                      {Object.entries(errors).map(([field, err]: any) => (
+                        <li key={field}>{err.message}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Actions */}
                 <div className="pt-4 border-t border-slate-200 flex justify-end space-x-2">
                   <button
@@ -770,6 +807,150 @@ export default function InventoryPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* --- STOCK HISTORY / AUDIT TRAIL MODAL --- */}
+        {historyModalOpen && historyProductId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => {
+              setHistoryModalOpen(false);
+              setHistoryProductId(null);
+            }} />
+            
+            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-2xl w-full z-10 overflow-hidden animate-scale-up flex flex-col max-h-[85vh]">
+              {/* Header */}
+              <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-shrink-0">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800">
+                    Stock History & Audit Trail
+                  </h3>
+                  <p className="text-xs text-slate-400 font-semibold mt-0.5">
+                    Detailed record of usage and adjustments
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setHistoryModalOpen(false);
+                    setHistoryProductId(null);
+                  }}
+                  className="text-slate-400 hover:bg-slate-200 p-1 rounded-full focus:outline-none"
+                >
+                  <XMarkIcon className="h-6 w-6" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 overflow-y-auto flex-1">
+                {historyLoading ? (
+                  <div className="h-48 flex items-center justify-center">
+                    <svg className="animate-spin h-8 w-8 text-orange-500" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  </div>
+                ) : !historyProduct ? (
+                  <div className="py-12 text-center text-slate-400 text-sm">
+                    Failed to load product details.
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Product Summary */}
+                    <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex justify-between items-center">
+                      <div>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Product</span>
+                        <h4 className="text-base font-bold text-slate-800 flex items-center mt-0.5">
+                          {historyProduct.code && (
+                            <span className="bg-orange-50 text-orange-600 font-extrabold text-[10px] px-1.5 py-0.5 rounded border border-orange-100 mr-2 uppercase">
+                              {historyProduct.code}
+                            </span>
+                          )}
+                          {historyProduct.name}
+                        </h4>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Current Status</span>
+                        <p className="text-sm font-bold text-slate-800 mt-0.5">
+                          {historyProduct.category?.name === 'Curtain Materials' && historyProduct.quantityAvailable < 0 ? (
+                            <span className="text-red-600 font-bold">
+                              Shortage of {Math.abs(historyProduct.quantityAvailable)} {historyProduct.measurementUnit}
+                            </span>
+                          ) : (
+                            <span className="text-slate-800">
+                              {historyProduct.quantityAvailable} {historyProduct.measurementUnit} available
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Stock Movements Timeline */}
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Audit Trail Log</h4>
+                      
+                      {!historyProduct.stockMovements || historyProduct.stockMovements.length === 0 ? (
+                        <div className="py-8 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                          No stock movements logged for this product.
+                        </div>
+                      ) : (
+                        <div className="border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+                          <table className="min-w-full divide-y divide-slate-100 text-left text-xs">
+                            <thead className="bg-slate-50">
+                              <tr>
+                                <th className="px-4 py-3 font-bold text-slate-500">Date</th>
+                                <th className="px-4 py-3 font-bold text-slate-500">User</th>
+                                <th className="px-4 py-3 font-bold text-slate-500">Change</th>
+                                <th className="px-4 py-3 font-bold text-slate-500">New Level</th>
+                                <th className="px-4 py-3 font-bold text-slate-500">Reason</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 bg-white">
+                              {historyProduct.stockMovements.map((m: any) => {
+                                const isPositive = m.change > 0;
+                                return (
+                                  <tr key={m.id} className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="px-4 py-3 whitespace-nowrap text-slate-500">
+                                      {new Date(m.date).toLocaleString()}
+                                    </td>
+                                    <td className="px-4 py-3 font-medium text-slate-700">
+                                      {m.user?.name || 'System'}
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap">
+                                      <span className={`font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                                        {isPositive ? '+' : ''}{m.change} {historyProduct.measurementUnit}
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-700">
+                                      {m.newQuantity} {historyProduct.measurementUnit}
+                                    </td>
+                                    <td className="px-4 py-3 text-slate-600 font-medium">
+                                      {m.reason}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end flex-shrink-0">
+                <button
+                  onClick={() => {
+                    setHistoryModalOpen(false);
+                    setHistoryProductId(null);
+                  }}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg shadow-sm"
+                >
+                  Close History
+                </button>
+              </div>
             </div>
           </div>
         )}
