@@ -172,14 +172,19 @@ export const allocateMaterials = async (req: Request, res: Response): Promise<vo
           throw new Error('Invalid product ID or quantity');
         }
 
-        // Fetch product inside transaction
-        const product = await tx.product.findUnique({ where: { id: productId } });
+        // Fetch product inside transaction with category information
+        const product = await tx.product.findUnique({
+          where: { id: productId },
+          include: { category: true }
+        });
         if (!product) {
           throw new Error(`Product not found with ID: ${productId}`);
         }
 
-        // Check stock availability
-        if (product.quantityAvailable < qty) {
+        const isCurtainMaterial = product.category.name === 'Curtain Materials';
+
+        // Check stock availability (Only bypass for Curtain Materials)
+        if (!isCurtainMaterial && product.quantityAvailable < qty) {
           throw new Error(`Insufficient stock for product "${product.name}". Available: ${product.quantityAvailable} ${product.measurementUnit}, Requested: ${qty}`);
         }
 

@@ -30,7 +30,7 @@ const productSchema = zod.object({
   measurementUnit: zod.string().min(1, 'Unit of measurement is required (e.g. yards, pieces)'),
   subCategory: zod.string().optional(),
   description: zod.string().optional(),
-  quantityAvailable: zod.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, 'Must be a non-negative number').optional(),
+  quantityAvailable: zod.string().refine(val => !isNaN(parseFloat(val)), 'Must be a valid number').optional(),
   minStockLevel: zod.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, 'Must be a non-negative number').optional(),
 });
 
@@ -38,7 +38,7 @@ type ProductFormValues = zod.infer<typeof productSchema>;
 
 // Validation schema for stock adjustment
 const adjustStockSchema = zod.object({
-  quantityAvailable: zod.string().refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, 'Must be a non-negative number'),
+  quantityAvailable: zod.string().refine(val => !isNaN(parseFloat(val)), 'Must be a valid number'),
   reason: zod.string().min(3, 'A reason is required to log the stock movement'),
 });
 
@@ -174,8 +174,8 @@ export default function InventoryPage() {
       code: isCurtainMaterialSelected ? (values.code || null) : null,
       purchasePrice: parseFloat(values.purchasePrice),
       sellingPrice: values.sellingPrice ? parseFloat(values.sellingPrice) : 0,
-      quantityAvailable: values.quantityAvailable ? parseFloat(values.quantityAvailable) : 0,
-      minStockLevel: values.minStockLevel ? parseFloat(values.minStockLevel) : 0,
+      quantityAvailable: isCurtainMaterialSelected ? 0 : (values.quantityAvailable ? parseFloat(values.quantityAvailable) : 0),
+      minStockLevel: isCurtainMaterialSelected ? 0 : (values.minStockLevel ? parseFloat(values.minStockLevel) : 0),
     };
 
     if (selectedProduct) {
@@ -360,12 +360,32 @@ export default function InventoryPage() {
 
                         {/* Qty Available */}
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-700">
-                              {p.quantityAvailable} {p.measurementUnit}
-                            </span>
-                            <span className="text-xs text-slate-400">Min limit: {p.minStockLevel}</span>
-                          </div>
+                          {p.category.name === 'Curtain Materials' ? (
+                            <div className="flex flex-col">
+                              {p.quantityAvailable < 0 ? (
+                                <>
+                                  <span className="text-sm font-bold text-slate-500">
+                                    0 {p.measurementUnit}
+                                  </span>
+                                  <span className="inline-flex items-center px-2 py-0.5 mt-1 rounded-md text-[10px] font-bold bg-red-100 text-red-700 border border-red-200 max-w-max">
+                                    Shortage: {Math.abs(p.quantityAvailable)} {p.measurementUnit}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-sm font-bold text-slate-700">
+                                  {p.quantityAvailable} {p.measurementUnit}
+                                </span>
+                              )}
+                              <span className="text-xs text-slate-400">Project-demand based</span>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col">
+                              <span className="text-sm font-bold text-slate-700">
+                                {p.quantityAvailable} {p.measurementUnit}
+                              </span>
+                              <span className="text-xs text-slate-400">Min limit: {p.minStockLevel}</span>
+                            </div>
+                          )}
                         </td>
 
                         {/* Prices */}
@@ -601,34 +621,42 @@ export default function InventoryPage() {
                 </div>
 
                 {!selectedProduct && (
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Quantity Available */}
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Starting Stock Count</label>
-                      <input
-                        type="number"
-                        {...register('quantityAvailable')}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="0"
-                      />
-                      {errors.quantityAvailable && <p className="text-xs text-red-500 mt-1">{errors.quantityAvailable.message}</p>}
-                    </div>
+                  <div>
+                    {!isCurtainMaterialSelected ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Quantity Available */}
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Starting Stock Count</label>
+                          <input
+                            type="number"
+                            {...register('quantityAvailable')}
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="0"
+                          />
+                          {errors.quantityAvailable && <p className="text-xs text-red-500 mt-1">{errors.quantityAvailable.message}</p>}
+                        </div>
 
-                    {/* Min Stock level */}
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Min Threshold Level</label>
-                      <input
-                        type="number"
-                        {...register('minStockLevel')}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="0"
-                      />
-                      {errors.minStockLevel && <p className="text-xs text-red-500 mt-1">{errors.minStockLevel.message}</p>}
-                    </div>
+                        {/* Min Stock level */}
+                        <div>
+                          <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Min Threshold Level</label>
+                          <input
+                            type="number"
+                            {...register('minStockLevel')}
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="0"
+                          />
+                          {errors.minStockLevel && <p className="text-xs text-red-500 mt-1">{errors.minStockLevel.message}</p>}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-orange-50/50 border border-orange-100/50 rounded-xl p-3.5 text-xs text-slate-500">
+                        💡 <strong className="text-slate-700">On-Demand Inventory:</strong> Curtain materials (fabrics & voiles) are ordered directly based on active project demands. They will start with 0 stock and require no minimum threshold.
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {selectedProduct && (
+                {selectedProduct && !isCurtainMaterialSelected && (
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Min Threshold Level</label>
                     <input

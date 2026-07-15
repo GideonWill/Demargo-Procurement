@@ -329,22 +329,31 @@ export default function DashboardPage() {
                     </thead>
                     <tbody className="bg-white divide-y divide-slate-200">
                       {lowStockProducts.map((p) => {
+                        const isCurtainMaterial = p.category?.name === 'Curtain Materials';
                         const isOut = p.quantityAvailable === 0;
+                        const isShortage = isCurtainMaterial && p.quantityAvailable < 0;
+
                         return (
                           <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-800">{p.name}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{p.subCategory || '-'}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-700">
-                              {p.quantityAvailable} {p.measurementUnit}
+                              {isShortage ? (
+                                <span className="text-red-600 font-bold">
+                                  Shortage: {Math.abs(p.quantityAvailable)} {p.measurementUnit}
+                                </span>
+                              ) : (
+                                `${p.quantityAvailable} ${p.measurementUnit}`
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                              {p.minStockLevel} {p.measurementUnit}
+                              {isCurtainMaterial ? 'On-Demand' : `${p.minStockLevel} ${p.measurementUnit}`}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${
-                                isOut ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                                isShortage ? 'bg-red-100 text-red-800' : isOut ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
                               }`}>
-                                {isOut ? 'OUT OF STOCK' : 'LOW STOCK'}
+                                {isShortage ? 'TO BUY' : isOut ? 'OUT OF STOCK' : 'LOW STOCK'}
                               </span>
                             </td>
                           </tr>

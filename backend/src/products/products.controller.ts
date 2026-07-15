@@ -187,8 +187,8 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
       }
     });
 
-    // Write initial stock movement if quantity is positive
-    if (qty > 0) {
+    // Write initial stock movement if quantity is non-zero
+    if (qty !== 0) {
       await createStockMovement(product.id, 0, qty, qty, userId, 'Initial stock setup');
     }
 
