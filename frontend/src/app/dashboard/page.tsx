@@ -114,7 +114,7 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
           <div>
             <h2 className="text-xl font-bold text-slate-800">Operational Overview</h2>
-            <p className="text-sm text-slate-500">Real-time status of Demargo Contractor inventories and suppliers.</p>
+            <p className="text-sm text-slate-500">Real-time status of Procurement Contractor inventories and suppliers.</p>
           </div>
           <button
             onClick={handleSync}
@@ -122,7 +122,7 @@ export default function DashboardPage() {
             className="flex items-center space-x-1.5 px-3.5 py-2 border border-slate-200 bg-white hover:bg-slate-50 disabled:bg-slate-50 text-slate-700 disabled:text-slate-400 rounded-lg text-sm font-semibold shadow-sm transition-colors"
           >
             <ArrowPathIcon className={`h-4 w-4 ${isSyncing ? 'animate-spin text-orange-500' : ''}`} />
-            <span>{isSyncing ? 'Syncing...' : 'Sync ERP'}</span>
+            <span>{isSyncing ? 'Syncing...' : 'Sync Data'}</span>
           </button>
         </div>
 

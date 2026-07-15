@@ -45,7 +45,7 @@ export default function LoginPage() {
       <div className="hidden md:flex md:w-1/2 relative overflow-hidden">
         <img
           src="/halfscreen.png"
-          alt="Demargo Procurement background"
+          alt="Procurement background"
           className="absolute inset-0 w-full h-full object-cover brightness-[0.7] contrast-[1.05]"
         />
         {/* Subtle overlay gradient to darken bottom/left */}
@@ -111,7 +111,7 @@ export default function LoginPage() {
                   className={`block w-full px-4 py-3 rounded-xl bg-slate-900 border text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
                     errors.email ? 'border-red-500/50 focus:ring-red-500' : 'border-slate-800 focus:border-orange-500'
                   }`}
-                  placeholder="you@demargo.com"
+                  placeholder="you@email.com"
                 />
                 {errors.email && (
                   <p className="mt-1.5 text-xs text-red-400 font-semibold">{errors.email.message}</p>

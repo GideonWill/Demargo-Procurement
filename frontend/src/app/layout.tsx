@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Demargo - Procurement Management System",
-  description: "Enterprise Resource Planning system for Demargo Interior Contractors managing curtain materials, blinds, suppliers, projects, and payments.",
+  title: "PROCUREMENT MANAGEMENT",
+  description: "Procurement Management System managing curtain materials, blinds, suppliers, projects, and payments.",
+  openGraph: {
+    title: "PROCUREMENT MANAGEMENT",
+    description: "Procurement Management System managing curtain materials, blinds, suppliers, projects, and payments.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

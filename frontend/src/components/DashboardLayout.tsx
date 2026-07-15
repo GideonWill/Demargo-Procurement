@@ -114,8 +114,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex flex-col w-64 bg-slate-900 border-r border-slate-800">
           {/* Brand/Logo Header */}
           <div className="flex items-center h-16 px-6 bg-slate-950 border-b border-slate-800">
-            <span className="text-orange-500 font-extrabold text-2xl tracking-wider">DEMARGO</span>
-            <span className="text-white text-xs font-bold bg-blue-700 ml-2 px-1.5 py-0.5 rounded tracking-wide">ERP</span>
+            <span className="text-orange-500 font-extrabold text-lg tracking-wider uppercase">PROCUREMENT</span>
           </div>
 
           {/* Navigation Links */}
@@ -189,8 +188,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             <div className="flex items-center h-16 px-6 bg-slate-950 border-b border-slate-800 flex-shrink-0">
-              <span className="text-orange-500 font-extrabold text-2xl tracking-wider font-mono">DEMARGO</span>
-              <span className="text-white text-xs font-bold bg-blue-700 ml-2 px-1.5 py-0.5 rounded tracking-wide">ERP</span>
+              <span className="text-orange-500 font-extrabold text-lg tracking-wider font-mono uppercase">PROCUREMENT</span>
             </div>
 
             <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">

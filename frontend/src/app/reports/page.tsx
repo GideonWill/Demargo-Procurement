@@ -137,7 +137,7 @@ export default function ReportsPage() {
       r.supplier,
       r.status,
     ]);
-    exportToCSV(headers, rows, `Demargo_Inventory_Report_${new Date().toISOString().slice(0, 10)}`);
+    exportToCSV(headers, rows, `Procurement_Inventory_Report_${new Date().toISOString().slice(0, 10)}`);
   };
 
   const handleExportPurchases = () => {
@@ -150,7 +150,7 @@ export default function ReportsPage() {
       po.status,
       po.items.map((i: any) => `${i.product.name} (x${i.quantity})`).join('; '),
     ]);
-    exportToCSV(headers, rows, `Demargo_Purchase_Report_${new Date().toISOString().slice(0, 10)}`);
+    exportToCSV(headers, rows, `Procurement_Purchase_Report_${new Date().toISOString().slice(0, 10)}`);
   };
 
   const handleExportSuppliers = () => {
@@ -167,7 +167,7 @@ export default function ReportsPage() {
       s.poCount,
       s.paymentCount,
     ]);
-    exportToCSV(headers, rows, `Demargo_Supplier_Report_${new Date().toISOString().slice(0, 10)}`);
+    exportToCSV(headers, rows, `Procurement_Supplier_Report_${new Date().toISOString().slice(0, 10)}`);
   };
 
   const handleExportFinancial = () => {
@@ -183,7 +183,7 @@ export default function ReportsPage() {
       new Date(p.paymentDate).toLocaleDateString(),
       p.notes,
     ]);
-    exportToCSV(headers, rows, `Demargo_Financial_Report_${new Date().toISOString().slice(0, 10)}`);
+    exportToCSV(headers, rows, `Procurement_Financial_Report_${new Date().toISOString().slice(0, 10)}`);
   };
 
   const isLoading = inventoryLoading || purchaseLoading || supplierLoading || financialLoading;
@@ -223,12 +223,12 @@ export default function ReportsPage() {
         {/* PRINT ONLY BRAND HEADER */}
         <div className="hidden print:flex items-center justify-between border-b-2 border-slate-900 pb-4 mb-4">
           <div>
-            <span className="text-orange-500 font-extrabold text-2xl tracking-wider">DEMARGO PROCUREMENT</span>
+            <span className="text-orange-500 font-extrabold text-2xl tracking-wider">PROCUREMENT MANAGEMENT</span>
             <p className="text-xs text-slate-500 font-semibold mt-1">Interior Design Contractors - Accounting Ledger</p>
           </div>
           <div className="text-right text-xs text-slate-400">
             <p>Report Date: {new Date().toLocaleDateString()}</p>
-            <p>Printed by: Demargo Admin</p>
+            <p>Printed by: Procurement Admin</p>
           </div>
         </div>
 
