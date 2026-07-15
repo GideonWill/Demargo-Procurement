@@ -44,28 +44,10 @@ export default function LoginPage() {
       {/* Left Column: Cover Image & Branding on Desktop */}
       <div className="hidden md:flex md:w-1/2 relative overflow-hidden">
         <img
-          src="/halfscreen.png"
+          src="/procureimage.png"
           alt="Procurement background"
-          className="absolute inset-0 w-full h-full object-cover brightness-[0.7] contrast-[1.05]"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        {/* Subtle overlay gradient to darken bottom/left */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
-        
-        {/* Large overlay logo & text */}
-        <div className="absolute bottom-16 left-16 right-16 z-20">
-          <div className="inline-flex items-center space-x-2.5 bg-slate-950/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 mb-4">
-            <span className="text-white text-xs font-bold bg-blue-700 px-2 py-1 rounded tracking-widest uppercase">
-              Procurement
-            </span>
-          </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight sm:text-5xl leading-tight">
-            Streamlining procurement, <br />
-            automating inventory.
-          </h1>
-          <p className="mt-4 text-base text-slate-300 max-w-md">
-            Complete inventory tracking, purchase orders, supplier management, and real-time project allocations.
-          </p>
-        </div>
       </div>
 
       {/* Right Column: Login Form */}

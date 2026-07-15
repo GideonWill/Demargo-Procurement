@@ -91,6 +91,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
   }, [user, queryClient]);
 
+  // Swipe gestures to open/close mobile sidebar
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touchCurrentX = e.touches[0].clientX;
+      const touchCurrentY = e.touches[0].clientY;
+
+      const diffX = touchCurrentX - touchStartX;
+      const diffY = touchCurrentY - touchStartY;
+
+      if (!mobileSidebarOpen) {
+        // SWIPE RIGHT (to open): Must originate near the left edge of the screen (within 50px)
+        if (touchStartX <= 50 && diffX > 80 && Math.abs(diffY) < 40) {
+          setMobileSidebarOpen(true);
+        }
+      } else {
+        // SWIPE LEFT (to close): Can originate anywhere, swiping left
+        if (diffX < -80 && Math.abs(diffY) < 40) {
+          setMobileSidebarOpen(false);
+        }
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [mobileSidebarOpen]);
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const navigation = [
