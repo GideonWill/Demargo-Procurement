@@ -169,6 +169,9 @@ export default function InventoryPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to delete product');
+    }
   });
 
   const adjustMutation = useMutation({
@@ -910,7 +913,7 @@ export default function InventoryPage() {
                                 const isPositive = m.change > 0;
                                 return (
                                   <tr key={m.id} className="hover:bg-slate-50/50 transition-colors">
-                                    <td className="px-4 py-3 whitespace-nowrap text-slate-500">
+                                    <td className="px-4 py-3 whitespace-nowrap text-slate-500" suppressHydrationWarning>
                                       {new Date(m.date).toLocaleString()}
                                     </td>
                                     <td className="px-4 py-3 font-medium text-slate-700">

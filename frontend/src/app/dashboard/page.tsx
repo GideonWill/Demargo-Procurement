@@ -148,23 +148,23 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {/* Card 1: Total Products */}
               <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                <div className="p-3 bg-blue-50 text-blue-600 rounded-lg shrink-0">
                   <Squares2X2Icon className="h-6 w-6" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Products</span>
-                  <span className="text-2xl font-black text-slate-800">{kpis.totalProducts}</span>
+                  <span className="text-2xl font-black text-slate-800 block">{kpis.totalProducts}</span>
                 </div>
               </div>
 
               {/* Card 2: Inventory Value */}
               <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                <div className="p-3 bg-orange-50 text-orange-600 rounded-lg">
+                <div className="p-3 bg-orange-50 text-orange-600 rounded-lg shrink-0">
                   <CurrencyDollarIcon className="h-6 w-6" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Inventory Value</span>
-                  <span className="text-xl font-black text-slate-800 truncate block">
+                  <span className="text-lg font-black text-slate-800 block whitespace-nowrap">
                     {formatCurrency(kpis.totalInventoryValue)}
                   </span>
                 </div>
@@ -172,23 +172,23 @@ export default function DashboardPage() {
 
               {/* Card 3: Total Suppliers */}
               <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
+                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg shrink-0">
                   <UserGroupIcon className="h-6 w-6" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Suppliers Registry</span>
-                  <span className="text-2xl font-black text-slate-800">{kpis.totalSuppliers}</span>
+                  <span className="text-2xl font-black text-slate-800 block">{kpis.totalSuppliers}</span>
                 </div>
               </div>
 
               {/* Card 4: Outstanding Payments */}
               <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                <div className="p-3 bg-red-50 text-red-600 rounded-lg">
+                <div className="p-3 bg-red-50 text-red-600 rounded-lg shrink-0">
                   <CreditCardIcon className="h-6 w-6" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Outstanding Balances</span>
-                  <span className="text-xl font-black text-slate-800 truncate block">
+                  <span className="text-lg font-black text-slate-800 block whitespace-nowrap">
                     {formatCurrency(kpis.outstandingPayments)}
                   </span>
                 </div>

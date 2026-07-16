@@ -227,7 +227,7 @@ export default function ReportsPage() {
             <p className="text-xs text-slate-500 font-semibold mt-1">Interior Design Contractors - Accounting Ledger</p>
           </div>
           <div className="text-right text-xs text-slate-400">
-            <p>Report Date: {new Date().toLocaleDateString()}</p>
+            <p suppressHydrationWarning>Report Date: {new Date().toLocaleDateString()}</p>
             <p>Printed by: Procurement Admin</p>
           </div>
         </div>

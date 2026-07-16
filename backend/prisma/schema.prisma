@@ -138,7 +138,7 @@ model PurchaseOrderItem {
 
 model Payment {
   id              String        @id @default(uuid())
-  invoiceNumber   String        @unique // INV-XXXXXX
+  invoiceNumber   String        // INV-XXXXXX
   purchaseOrderId String
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
   supplierId      String

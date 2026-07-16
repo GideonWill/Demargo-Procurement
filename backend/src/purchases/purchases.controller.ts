@@ -178,7 +178,12 @@ export const approvePurchaseOrder = async (req: Request, res: Response): Promise
     const updatedPO = await prisma.purchaseOrder.update({
       where: { id },
       data: { status: POStatus.APPROVED },
-      include: { supplier: true }
+      include: {
+        supplier: true,
+        items: {
+          include: { product: true }
+        }
+      }
     });
 
     // Audit Log
@@ -250,7 +255,12 @@ export const receivePurchaseOrder = async (req: Request, res: Response): Promise
       return await tx.purchaseOrder.update({
         where: { id },
         data: { status: POStatus.RECEIVED },
-        include: { supplier: true }
+        include: {
+          supplier: true,
+          items: {
+            include: { product: true }
+          }
+        }
       });
     });
 
@@ -303,7 +313,12 @@ export const cancelPurchaseOrder = async (req: Request, res: Response): Promise<
     const updatedPO = await prisma.purchaseOrder.update({
       where: { id },
       data: { status: POStatus.CANCELLED },
-      include: { supplier: true }
+      include: {
+        supplier: true,
+        items: {
+          include: { product: true }
+        }
+      }
     });
 
     // Audit Log

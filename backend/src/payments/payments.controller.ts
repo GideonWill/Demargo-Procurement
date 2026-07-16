@@ -70,12 +70,6 @@ export const recordPayment = async (req: Request, res: Response): Promise<void> 
 
       // 3. Create Payment Record
       const invNum = invoiceNumber || generateInvoiceNumber();
-      
-      // Check invoice number uniqueness
-      const existingInv = await tx.payment.findUnique({ where: { invoiceNumber: invNum } });
-      if (existingInv) {
-        throw new Error(`Invoice number "${invNum}" already exists.`);
-      }
 
       const isFullyPaid = amt === remainingBalance;
       const paymentStatus = isFullyPaid ? PaymentStatus.PAID : PaymentStatus.PARTIALLY_PAID;

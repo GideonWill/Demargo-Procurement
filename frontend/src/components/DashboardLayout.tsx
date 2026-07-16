@@ -349,7 +349,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 <p className={`text-xs text-slate-800 ${!n.read ? 'font-semibold' : ''}`}>
                                   {n.message}
                                 </p>
-                                <span className="text-[10px] text-slate-400 block mt-1">
+                                <span className="text-[10px] text-slate-400 block mt-1" suppressHydrationWarning>
                                   {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                               </div>

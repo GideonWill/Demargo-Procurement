@@ -535,7 +535,7 @@ export default function PurchasesPage() {
               <div className="md:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4 flex flex-col h-[320px]">
                 <h4 className="text-sm font-bold text-slate-700 flex items-center space-x-1.5 pb-2 border-b border-slate-100">
                   <DocumentTextIcon className="h-5 w-5 text-slate-400" />
-                  <span>Items Ordered ({selectedPO.items.length})</span>
+                  <span>Items Ordered ({selectedPO.items?.length || 0})</span>
                 </h4>
 
                 <div className="flex-1 overflow-y-auto border border-slate-100 rounded-lg">
@@ -549,7 +549,7 @@ export default function PurchasesPage() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-slate-100 text-sm">
-                      {selectedPO.items.map((item) => (
+                      {selectedPO.items?.map((item) => (
                         <tr key={item.id}>
                           <td className="px-4 py-2.5 font-bold text-slate-850">{item.product.name}</td>
                           <td className="px-4 py-2.5 text-slate-600 font-semibold">{item.quantity} {item.product.measurementUnit}</td>
